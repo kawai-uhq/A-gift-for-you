@@ -214,8 +214,6 @@
 </head>
 <body>
 
- <iframe src="music.html" allow="autoplay" style="display:none;"></iframe>
-
 <!-- ☀️ Moving Sun (clickable) -->
 <div class="sun" id="sun" role="button" aria-label="Sun (clickable)"></div>
 
@@ -375,6 +373,12 @@
     document.body.appendChild(msg);
     setTimeout(() => msg.remove(), 4200);
   });
+
+ <!-- visible music player -->
+<iframe id="musicFrame" src="music.html" allow="autoplay"
+        style="position:fixed;right:16px;bottom:16px;width:340px;height:420px;border-radius:12px;border:0;box-shadow:0 12px 40px rgba(0,0,0,0.45);z-index:50;">
+</iframe>
+ 
 </script>
 </body>
 </html>

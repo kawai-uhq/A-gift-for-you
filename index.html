@@ -44,20 +44,21 @@
     100% { transform: scale(0.5); opacity: 0; }
   }
 
-  /* Curved Land (lowered) */
+  //* Curved Land with Soft Shadow Gradient */
 .land {
   position: absolute;
-  bottom: -40px;   /* lowered from 0 to -40px */
+  bottom: -40px;
   left: 0;
   width: 120%;
-  height: 200px;   /* slightly reduced height for balance */
-  background: #1a0f16;
+  height: 200px;
+  background: linear-gradient(to bottom, #2a1b25 0%, #1a0f16 80%);
   border-top-left-radius: 50% 100px;
   border-top-right-radius: 50% 100px;
   transform: translateX(-10%);
   z-index: 5;
+  box-shadow: 0 -15px 25px rgba(0, 0, 0, 0.4) inset; /* soft depth shadow */
 }
-
+ 
   /* Tree + Swing Scene (fixed to the right, above the land) */
 .tree-scene {
   position: absolute;

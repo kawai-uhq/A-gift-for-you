@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>For You 🌸</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+
+  /* Background gradient */
+  body {
+    background: linear-gradient(180deg, #ffd6e8, #ffb6c1, #ff9bb3);
+    background-size: 400% 400%;
+    animation: bgShift 10s ease infinite;
+    position: relative;
+  }
+  @keyframes bgShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Petals + Hearts */
+  .petal, .heart {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+  .petal { animation: fall linear infinite; }
+  @keyframes fall {
+    0% { transform: translateY(-10%) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0.3; }
+  }
+
+  .heart { animation: pop 1.5s ease forwards; }
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(0.5); opacity: 0; }
+  }
+
+  /* Curved Land with Soft Shadow Gradient */
+  .land {
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    width: 120%;
+    height: 200px;
+    background: linear-gradient(to bottom, #2a1b25 0%, #1a0f16 80%);
+    border-top-left-radius: 50% 100px;
+    border-top-right-radius: 50% 100px;
+    transform: translateX(-10%);
+    z-index: 5;
+    box-shadow: 0 -15px 25px rgba(0, 0, 0, 0.4) inset;
+  }
+
+  /* Tree + Swing Scene */
+  .tree-scene {
+    position: absolute;
+    bottom: 160px;
+    right: 0;
+    width: 280px;
+    height: 280px;
+    z-index: 6;
+    cursor: pointer;
+  }
+
+  svg { width: 100%; height: 100%; fill: #1a0f16; }
+
+  /* Tree-top sway animation */
+  .tree-top {
+    transform-box: fill-box;
+    transform-origin: 75% 30%;
+    animation: treeSway 6s ease-in-out infinite;
+  }
+  @keyframes treeSway {
+    0%   { transform: rotate(-2deg); }
+    25%  { transform: rotate(0deg); }
+    50%  { transform: rotate(2deg); }
+    75%  { transform: rotate(0deg); }
+    100% { transform: rotate(-2deg); }
+  }
+
+  /* Swing animation */
+  .swing {
+    transform-box: fill-box;
+    transform-origin: 50% 0%;
+    animation: swingMotion 4.2s ease-in-out infinite;
+  }
+  @keyframes swingMotion {
+    0% { transform: rotate(6deg); }
+    50% { transform: rotate(-6deg); }
+    100% { transform: rotate(6deg); }
+  }
+
+  /* Slight branch sway */
+  .branch-sway {
+    transform-box: fill-box;
+    transform-origin: 50% 10%;
+    animation: branchTwist 3.6s ease-in-out infinite;
+  }
+  @keyframes branchTwist {
+    0% { transform: rotate(-1.5deg); }
+    50% { transform: rotate(1.5deg); }
+    100% { transform: rotate(-1.5deg); }
+  }
+
+  /* Floating message (now floats upward while fading) */
+  .message {
+    position: absolute;
+    right: 60px;
+    bottom: 430px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 14px;
+    border-radius: 12px;
+    color: #000;
+    font-weight: 600;
+    font-size: 1rem;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    animation: floatFade 4s ease forwards;
+    z-index: 10;
+    pointer-events: none;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  @keyframes floatFade {
+    0%   { opacity: 0; transform: translateY(12px) scale(0.98); }
+    10%  { opacity: 1; transform: translateY(0) scale(1); }
+    70%  { opacity: 1; transform: translateY(-18px) scale(1); }
+    100% { opacity: 0; transform: translateY(-40px) scale(0.98); }
+  }
+
+  /* small responsive tweak so message doesn't go off-screen on narrow devices */
+  @media (max-width:420px) {
+    .message { right: 12px; bottom: 360px; font-size:0.95rem; }
+    .tree-scene { width: 220px; height: 220px; bottom: 140px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Falling Sakura & hearts script -->
+<script>
+  // petals
+  const numPetals = 28;
+  for (let i = 0; i < numPetals; i++) {
+    const petal = document.createElement('div');
+    petal.classList.add('petal');
+    petal.textContent = '🌸';
+    petal.style.left = Math.random() * 100 + 'vw';
+    petal.style.fontSize = (Math.random() * 26 + 14) + 'px';
+    petal.style.animationDuration = (Math.random() * 6 + 6) + 's';
+    petal.style.animationDelay = Math.random() * 5 + 's';
+    petal.style.top = Math.random() * -200 + 'px';
+    document.body.appendChild(petal);
+  }
+
+  // hearts
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.textContent = '💗';
+    heart.style.left = (20 + Math.random() * 60) + 'vw';
+    heart.style.top = (20 + Math.random() * 60) + 'vh';
+    heart.style.fontSize = (Math.random() * 20 + 12) + 'px';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1500);
+  }
+  setInterval(createHeart, 650);
+</script>
+
+<!-- Ground -->
+<div class="land"></div>
+
+<!-- Tree & Swing Scene -->
+<div class="tree-scene" id="treeScene" role="button" aria-label="Tree with swing (clickable)">
+  <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- Trunk -->
+    <path d="M230 300 L250 160 L270 300 Z" fill="#1a0f16"/>
+
+    <!-- Tree top -->
+    <g class="tree-top">
+      <circle cx="250" cy="140" r="60" />
+      <circle cx="220" cy="120" r="50" />
+      <circle cx="280" cy="120" r="50" />
+      <g class="branch-sway">
+        <circle cx="245" cy="100" r="14" />
+        <circle cx="215" cy="95" r="10" />
+        <circle cx="275" cy="95" r="11" />
+      </g>
+    </g>
+
+    <!-- Branch -->
+    <path d="M200 150 C210 140, 240 135, 260 145" stroke="#1a0f16" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+    <!-- Swing ropes -->
+    <line x1="200" y1="150" x2="200" y2="230" stroke="#1a0f16" stroke-width="3" stroke-linecap="round"/>
+    <line x1="220" y1="150" x2="220" y2="230" stroke="#1a0f16" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Swing & People -->
+    <g class="swing">
+      <rect x="190" y="230" width="40" height="6" fill="#1a0f16"/>
+      <circle cx="200" cy="220" r="6" fill="#1a0f16"/>
+      <rect x="196" y="226" width="8" height="12" fill="#1a0f16"/>
+      <circle cx="215" cy="220" r="6" fill="#1a0f16"/>
+      <rect x="211" y="226" width="8" height="12" fill="#1a0f16"/>
+      <path d="M218 217 C220 215, 222 216, 223 214" stroke="#1a0f16" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </g>
+  </svg>
+</div>
+
+<script>
+  // click tree or swing -> show floating message
+  const treeScene = document.getElementById('treeScene');
+
+  function showMessage(text = "Us swinging one day! 🩵") {
+    const msg = document.createElement('div');
+    msg.className = 'message';
+    msg.textContent = text;
+    document.body.appendChild(msg);
+    // remove after animation finishes (4s)
+    setTimeout(() => {
+      msg.remove();
+    }, 4200);
+  }
+
+  treeScene.addEventListener('click', (e) => {
+    // prevent any accidental double clicks causing overlap by briefly disabling pointer
+    treeScene.style.pointerEvents = 'none';
+    showMessage();
+    setTimeout(()=> treeScene.style.pointerEvents = 'auto', 600); // re-enable after small delay
+  });
+
+  // also allow clicking the swing group if someone taps the SVG elements directly
+  document.querySelectorAll('.swing, .tree-top, path, circle, rect').forEach(el => {
+    el.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      treeScene.dispatchEvent(new Event('click'));
+    }, { passive: true });
+  });
+</script>
+
+</body>
+</html>

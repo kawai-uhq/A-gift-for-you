@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>For You 🌇</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+
+  /* 🌇 Animated Sunset Background */
+  body {
+    background: linear-gradient(180deg, #ffaf7b, #ff7b7b, #7b4397);
+    background-size: 400% 400%;
+    animation: bgShift 25s ease-in-out infinite;
+    position: relative;
+  }
+  @keyframes bgShift {
+    0% { background-position: 0% 40%; filter: brightness(1); }
+    50% { background-position: 100% 60%; filter: brightness(0.9); }
+    100% { background-position: 0% 40%; filter: brightness(1); }
+  }
+
+  /* ☀️ Moving Glowing Sun */
+  .sun {
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, #ff5533 0%, #ff7e5f 50%, rgba(255,126,95,0) 70%);
+    border-radius: 50%;
+    filter: blur(20px);
+    box-shadow: 0 0 120px 40px rgba(255,126,95,0.4);
+    z-index: 0;
+    animation: sunMove 30s ease-in-out infinite;
+  }
+  @keyframes sunMove {
+    0% {
+      top: -60px;
+      left: -60px;
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      top: 60px;
+      left: -40px;
+      opacity: 0.85;
+      transform: scale(1.1);
+    }
+    75% {
+      top: 140px;
+      left: -20px;
+      opacity: 0.6;
+      transform: scale(1.15);
+    }
+    100% {
+      top: -60px;
+      left: -60px;
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Petals */
+  .petal-wrap {
+    position:absolute;
+    pointer-events:auto;
+    top:0; left:0;
+    will-change: transform, opacity;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  .petal {
+    display:inline-block;
+    user-select:none; -webkit-user-select:none;
+    cursor:pointer;
+    will-change: transform, opacity;
+    text-shadow:0 2px 6px rgba(0,0,0,0.06);
+    animation: petalDrift 4s ease-in-out infinite;
+  }
+  @keyframes fallDown { 0%{transform:translateY(-10vh);opacity:1}100%{transform:translateY(120vh);opacity:0.28} }
+  @keyframes petalDrift {
+    0% { transform: translateX(0px) rotate(-8deg); }
+    25% { transform: translateX(8px) rotate(-2deg); }
+    50% { transform: translateX(14px) rotate(6deg); }
+    75% { transform: translateX(6px) rotate(2deg); }
+    100% { transform: translateX(0px) rotate(-8deg); }
+  }
+
+  /* Hearts */
+  .heart {
+    position:absolute;
+    cursor:pointer;
+    animation: pop 1.5s ease forwards;
+    user-select:none; -webkit-user-select:none;
+  }
+  @keyframes pop { 0%{transform:scale(0.5);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(0.5);opacity:0} }
+
+  /* Remove blue focus/tap highlights */
+  *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  .petal, .heart, .tree-scene, .petal-wrap {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-focus-ring-color: transparent;
+    outline: none !important;
+    user-select: none;
+  }
+
+  /* Land */
+  .land {
+    position:absolute;
+    bottom:-40px;
+    left:0;
+    width:120%;
+    height:200px;
+    background: linear-gradient(to bottom,#3d1f1f 0%,#1a0f0f 80%);
+    border-top-left-radius:50% 100px;
+    border-top-right-radius:50% 100px;
+    transform:translateX(-10%);
+    z-index:5;
+    box-shadow:0 -15px 25px rgba(0,0,0,0.4) inset;
+  }
+
+  /* Tree + swing */
+  .tree-scene {
+    position:absolute;
+    bottom:100px;
+    right:0;
+    width:280px;
+    height:280px;
+    z-index:6;
+    cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  svg { width:100%; height:100%; fill:#1a0f16; }
+  .tree-top { transform-box: fill-box; transform-origin: 75% 30%; animation: treeSway 6s ease-in-out infinite; }
+  @keyframes treeSway { 0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)} }
+  .swing { transform-box: fill-box; transform-origin:50% 0%; animation: swingMotion 4.2s ease-in-out infinite; }
+  @keyframes swingMotion { 0%{transform:rotate(6deg)}50%{transform:rotate(-6deg)}100%{transform:rotate(6deg)} }
+
+  /* Floating messages */
+  .message {
+    position:absolute;
+    background: rgba(255,255,255,0.95);
+    padding:8px 14px;
+    border-radius:14px;
+    font-weight:600;
+    font-size:1rem;
+    opacity:0;
+    transform:translateY(12px) scale(0.98);
+    animation: floatFade 4s ease forwards;
+    z-index:10;
+    pointer-events:none;
+    white-space:nowrap;
+  }
+  @keyframes floatFade {
+    0% { opacity:0; transform:translateY(12px) scale(0.98); }
+    10% { opacity:1; transform:translateY(0) scale(1); }
+    70% { opacity:1; transform:translateY(-18px) scale(1); }
+    100% { opacity:0; transform:translateY(-50px) scale(0.98); }
+  }
+
+  .flower-msg { font-weight:700; font-size:0.92rem; border-radius:10px; }
+
+  .heart-msg {
+    font-weight:700;
+    border-radius:12px;
+    font-size:1rem;
+    transform-origin:center;
+    animation: floatFade 4s ease forwards, heartBeat 0.9s ease-in-out infinite;
+  }
+
+  @keyframes heartBeat {
+    0%   { transform: scale(1); box-shadow: 0 0 8px rgba(0,0,0,0); }
+    25%  { transform: scale(1.03); box-shadow: 0 0 18px rgba(255,120,180,0.25); }
+    50%  { transform: scale(1); box-shadow: 0 0 28px rgba(255,120,180,0.45); }
+    75%  { transform: scale(1.02); box-shadow: 0 0 18px rgba(255,120,180,0.25); }
+    100% { transform: scale(1); box-shadow: 0 0 8px rgba(0,0,0,0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ☀️ Moving Sun -->
+<div class="sun"></div>
+
+<script>
+  /* Petals */
+  const numPetals = 30;
+  for (let i = 0; i < numPetals; i++) {
+    const wrap = document.createElement('div');
+    wrap.className = 'petal-wrap';
+    const depth = Math.ceil(Math.random() * 3);
+    const size = depth === 1 ? Math.random() * 20 + 24
+               : depth === 2 ? Math.random() * 18 + 16
+               : Math.random() * 14 + 10;
+    const fallDuration = depth === 1 ? Math.random() * 5 + 7
+                       : depth === 2 ? Math.random() * 7 + 9
+                       : Math.random() * 9 + 11;
+    wrap.style.left = Math.random() * 100 + 'vw';
+    wrap.style.top = Math.random() * -200 + 'px';
+    wrap.style.animation = `fallDown ${fallDuration}s linear infinite ${Math.random()*5}s`;
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.textContent = '🌸';
+    petal.style.fontSize = size + 'px';
+    wrap.appendChild(petal);
+    document.body.appendChild(wrap);
+  }
+
+  /* Hearts */
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.textContent = '💗';
+    heart.style.left = (20 + Math.random() * 60) + 'vw';
+    heart.style.top = (20 + Math.random() * 60) + 'vh';
+    heart.style.fontSize = (Math.random() * 20 + 12) + 'px';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 2000);
+  }
+  setInterval(createHeart, 700);
+</script>
+
+<div class="land"></div>
+
+<div class="tree-scene" id="treeScene">
+  <svg viewBox="0 0 300 300">
+    <path d="M230 300 L250 160 L270 300 Z" fill="#1a0f16"/>
+    <g class="tree-top">
+      <circle cx="250" cy="140" r="60"/>
+      <circle cx="220" cy="120" r="50"/>
+      <circle cx="280" cy="120" r="50"/>
+    </g>
+    <line x1="200" y1="150" x2="200" y2="230" stroke="#1a0f16" stroke-width="3"/>
+    <line x1="220" y1="150" x2="220" y2="230" stroke="#1a0f16" stroke-width="3"/>
+    <g class="swing">
+      <rect x="190" y="230" width="40" height="6" fill="#1a0f16"/>
+      <circle cx="200" cy="220" r="6" fill="#1a0f16"/>
+      <circle cx="215" cy="220" r="6" fill="#1a0f16"/>
+    </g>
+  </svg>
+</div>
+
+<script>
+  /* Tree Message */
+  const treeScene = document.getElementById('treeScene');
+  treeScene.addEventListener('click', () => {
+    const msg = document.createElement('div');
+    msg.className = 'message';
+    msg.textContent = "Us swinging one day! 🩵";
+    msg.style.right = '60px';
+    msg.style.bottom = '330px';
+    msg.style.color = '#003366';
+    msg.style.boxShadow = '0 0 25px rgba(150,200,255,0.6)';
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 4200);
+  });
+
+  /* Petal & Heart Messages */
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('petal')) {
+      const msg = document.createElement('div');
+      msg.className = 'message flower-msg';
+      msg.textContent = "You're cute as this flower :3";
+      msg.style.color = '#ffb6c1';
+      const rect = e.target.getBoundingClientRect();
+      msg.style.left = rect.left + rect.width/2 - 80 + 'px';
+      msg.style.top = rect.top - 48 + 'px';
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 4200);
+    }
+    if (e.target.classList.contains('heart')) {
+      const msg = document.createElement('div');
+      msg.className = 'message heart-msg';
+      const texts = ["You stole my heart ♥️", "I love you 💝"];
+      msg.textContent = texts[Math.floor(Math.random() * texts.length)];
+      msg.style.color = '#ff3366';
+      const rect = e.target.getBoundingClientRect();
+      msg.style.left = rect.left + rect.width/2 - 80 + 'px';
+      msg.style.top = rect.top - 40 + 'px';
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 4200);
+    }
+  });
+</script>
+</body>
+</html>

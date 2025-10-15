@@ -58,17 +58,17 @@
   z-index: 5;
 }
 
-  /* Tree + Swing Scene */
-  .tree-scene {
-    position: absolute;
-    bottom: 40px;
-    right: 60px;
-    width: 250px;
-    height: 250px;
-    z-index: 6;
-    pointer-evnts: none; /* scene is decorative */
-  }
-
+  /* Tree + Swing Scene (fixed to the right, above the land) */
+.tree-scene {
+  position: absolute;
+  bottom: 160px; /* lifted so it sits on the hill surface */
+  right: 0; /* fixed to screen edge */
+  width: 280px;
+  height: 280px;
+  z-index: 6;
+  pointer-events: none;
+}
+ 
   svg { width: 100%; height: 100%; fill: #1a0f16; }
 
   /* Tree-top sway animation */

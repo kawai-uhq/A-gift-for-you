@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>For You — Proposal (interactive)</title>
+<title>For You Ashley,My Love(interactive)</title>
 <style>
   :root{ --accent:#ff6666; --sun-glow: rgba(255,126,95,0.4); --quest-blue: rgba(100,160,255,0.18); }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -43,7 +43,7 @@
   .quest-box {
     position:fixed;
     left:50%;
-    top:10%;
+    top:5%;
     transform:translateX(-50%) translateY(0);
     z-index:100001;
     background:linear-gradient(90deg,#ff7b7b,#ff4a8a);
@@ -235,10 +235,10 @@
 <div id="miniPlayer" aria-hidden="true">
   <button class="close-btn" id="closePlayer" aria-label="Minimize">×</button>
   <div id="mpControls">
-    <div class="mp-title" id="mpTitle">Now playing — YouTube</div>
+    <div class="mp-title" id="mpTitle">Where have you been</div>
     <div class="mp-buttons">
-      <button id="mpPlay" aria-label="Play">▶️</button>
       <button id="mpRew" title="Rewind 10s">⏪</button>
+      <button id="mpPlay" aria-label="Play">▶️</button>
       <button id="mpFwd" title="Forward 10s">⏩</button>
     </div>
     <input type="range" id="mpProgress" min="0" max="100" value="0" aria-label="Progress">
@@ -519,8 +519,8 @@ function typeWrite(el, text, speed = 32) {
     yes.addEventListener('click', (e)=>{
       e.stopPropagation();
       const full = `${chosenName} Das`;
-      panel.innerHTML = `<h2>You made Aniket's heart happy 💖</h2><p>and you have successfully become <strong>${full}</strong></p>`;
-      spawnHearts(14);
+      panel.innerHTML = `<h2>You made Aniket happy 💖</h2><p>You have successfully become <strong>${full}</strong></p>`;
+      spawnHearts(5);
       setTimeout(()=> { if (panelRoot) panelRoot.remove(); }, 7000);
     });
 
@@ -588,7 +588,7 @@ function typeWrite(el, text, speed = 32) {
   function createInstruction() {
     instructionEl = document.createElement('div');
     instructionEl.className = 'instruction';
-    instructionEl.textContent = "Hey, try clicking on the petals, tree/swing, heart, land, sun!";
+    instructionEl.textContent = "Hey, try clicking on the petals, tree/swing, heart, land, sun and maybe on the No in quest too!😜";
     document.body.appendChild(instructionEl);
 
     instructionEl.addEventListener('click', ()=> { dismissInstruction(true); });

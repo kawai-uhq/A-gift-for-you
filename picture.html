@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Our Pictures 💞</title>
+<style>
+  :root{ --accent:#ff6666; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial, "Poppins", sans-serif; -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color: transparent; user-select:none; overflow:hidden; background:linear-gradient(180deg,#ffaf7b,#ff7b7b,#7b4397);}
+
+  /* Land at the bottom */
+  .land { position:absolute; bottom:-40px; left:0; width:120%; height:200px; background:linear-gradient(to bottom,#3d1f1f 0%,#1a0f0f 80%); border-top-left-radius:50% 100px; border-top-right-radius:50% 100px; transform:translateX(-10%); z-index:1; box-shadow:0 -15px 25px rgba(0,0,0,0.4) inset; }
+
+  /* Petals container */
+  #petals { position:absolute; inset:0; pointer-events:none; z-index:2; }
+
+  .petal-wrap { position:absolute; top:0; left:0; pointer-events:none; }
+  .petal { display:inline-block; user-select:none; text-shadow:0 2px 6px rgba(0,0,0,0.06); will-change:transform,opacity; animation: fallDown linear infinite; }
+  @keyframes fallDown { 0%{ transform: translateY(-10vh) } 100%{ transform: translateY(120vh) } }
+
+  /* page container for photos */
+  .container { position:relative; display:flex; align-items:center; justify-content:center; height:100vh; gap:34px; z-index:10; }
+
+  .polaroid {
+    width:220px; background:#fff; padding:12px 12px 18px; border-radius:8px;
+    box-shadow:0 16px 40px rgba(0,0,0,0.28); text-align:center; opacity:0;
+    transform-origin:center; transition:transform .6s ease, opacity 1s ease;
+    position:relative;
+  }
+  .polaroid img { width:190px; height:140px; object-fit:cover; border-radius:6px; animation: floaty 4.6s ease-in-out infinite; display:block; }
+  .caption { margin-top:8px; font-weight:700; color:#333; font-size:.95rem; }
+
+  .left { transform: rotate(-6deg); }
+  .right { transform: rotate(6deg); }
+
+  @keyframes floaty { 0%{ transform:translateY(0) } 50%{ transform:translateY(-6px) } 100%{ transform:translateY(0) } }
+
+  /* heart bouncing between pics */
+  .between-heart {
+    position:fixed; z-index:120; width:44px; height:44px; pointer-events:none; display:flex; align-items:center; justify-content:center;
+    transform:translate(-50%,-50%); transition: transform 800ms cubic-bezier(.22,.9,.2,1); font-size:28px; filter:drop-shadow(0 8px 20px rgba(255,80,120,0.25)); opacity:0;
+  }
+
+  /* mini music player (lower-left) */
+  #miniPlayer {
+    position:fixed; left:18px; bottom:18px; width:320px; max-width:86%;
+    background:rgba(0,0,0,0.36); padding:12px; border-radius:12px; color:#fff;
+    z-index:9999; backdrop-filter: blur(6px); box-shadow:0 10px 30px rgba(0,0,0,0.45);
+    transition:transform .25s,opacity .25s; display:none;
+  }
+  #miniPlayer .close-btn { position:absolute; top:6px; right:8px; color:#fff; background:none; border:none; font-size:18px; cursor:pointer; padding:6px; }
+  #miniPlayer .mp-title { font-weight:700; margin-bottom:8px; font-size:0.95rem; }
+  #miniPlayer .mp-buttons button {
+    background:transparent; border:none; color:inherit; font-size:18px; padding:6px; margin-right:6px; border-radius:6px; cursor:pointer; -webkit-appearance:none; outline:none;
+  }
+  #miniPlayer .mp-buttons button:focus{ outline:none; box-shadow:none; }
+
+  #miniPlayer input[type=range] { width:100%; margin-top:8px; background:transparent; }
+
+  /* disc when minimized */
+  .mini-disc {
+    position:fixed; left:25px; bottom:25px; width:64px; height:64px; border-radius:50%; background-size:cover; background-position:center center;
+    cursor:pointer; z-index:99999; transition:transform .2s,opacity .2s; border:6px solid #fff; box-shadow: inset 0 -6px 12px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.45);
+    display:none;
+  }
+  .mini-disc--ring { box-shadow: inset 0 -6px 12px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.45), 0 0 18px rgba(255,120,120,0.12); display:flex; align-items:center; justify-content:center; }
+  .mini-disc.rotating { animation: spin 6s linear infinite; display:flex; align-items:center; justify-content:center; }
+  @keyframes spin { 0%{ transform:rotate(0deg) } 100%{ transform:rotate(360deg) } }
+  .mini-disc::after { content:''; width:20px; height:20px; border-radius:50%; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.15), rgba(255,255,255,0.02) 40%, rgba(0,0,0,0.12) 60%); border:2px solid rgba(255,255,255,0.35); box-shadow: inset 0 -4px 8px rgba(0,0,0,0.2); }
+
+  /* back button */
+  .back-btn { position:fixed; bottom:20px; right:20px; background:rgba(255,255,255,0.95); color:#7b4397; padding:10px 18px; border-radius:12px; font-weight:700; font-size:1rem; text-decoration:none; box-shadow:0 6px 18px rgba(0,0,0,0.2); z-index:999; }
+  .back-btn:focus, .back-btn:active { outline:none; }
+  .back-btn:hover { transform:scale(1.03); transition:transform .18s; }
+
+  /* remove default focus outlines on interactive elements */
+  button:focus, a:focus { outline:none; box-shadow:none; }
+</style>
+</head>
+<body>
+  <!-- petals -->
+  <div id="petals"></div>
+
+  <!-- main photo area -->
+  <div class="container" aria-hidden="false">
+    <div class="polaroid left">
+      <img src="images/photo1.jpg" alt="Thinking of you">
+      <div class="caption">Thinking of you</div>
+    </div>
+
+    <div id="betweenHeart" class="between-heart">💗</div>
+
+    <div class="polaroid right">
+      <img src="images/photo2.jpg" alt="One day, together">
+      <div class="caption">One day, together</div>
+    </div>
+  </div>
+
+  <div class="land" aria-hidden="true"></div>
+
+  <!-- mini music player -->
+  <div id="miniPlayer" aria-hidden="true">
+    <button class="close-btn" id="closePlayer" aria-label="Minimize player">×</button>
+    <div class="mp-title" id="mpTitle">Now playing — YouTube</div>
+    <div class="mp-buttons">
+      <button id="mpPlay" aria-label="Play">▶️</button>
+      <button id="mpRew" title="Rewind 10s">⏪</button>
+      <button id="mpFwd" title="Forward 10s">⏩</button>
+    </div>
+    <input type="range" id="mpProgress" min="0" max="100" value="0" aria-label="Progress">
+    <div id="mpTime" style="font-size:.95rem;margin-top:6px;">0:00 / 0:00</div>
+    <div style="margin-top:8px;">
+      <label style="font-size:12px;color:#ffdede">Volume</label>
+      <input type="range" id="mpVolume" min="0" max="1" step="0.01" value="0.6" aria-label="Volume">
+    </div>
+  </div>
+
+  <!-- minimized disc -->
+  <div id="miniDisc" class="mini-disc mini-disc--ring" aria-hidden="true" role="button" tabindex="0"></div>
+
+  <a href="index.html" class="back-btn" id="backBtn">↩ Back</a>
+
+  <!-- hidden YT container to host the iframe -->
+  <div id="yt-player-container" style="position:fixed;right:-9999px;bottom:-9999px;width:1px;height:1px;overflow:hidden"></div>
+
+<script>
+/* ---------------- petals generation ---------------- */
+(function createPetals(){
+  const container = document.getElementById('petals');
+  const numPetals = 40;
+  for (let i=0;i<numPetals;i++){
+    const wrap = document.createElement('div');
+    wrap.className = 'petal-wrap';
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.textContent = '🌸';
+    const size = Math.random()*20 + 10;
+    const dur = (Math.random()*6 + 7).toFixed(2);
+    const delay = (Math.random()*5).toFixed(2);
+    wrap.style.left = Math.random()*100 + 'vw';
+    wrap.style.top = Math.random()*-200 + 'px';
+    petal.style.fontSize = size + 'px';
+    petal.style.animationDuration = `${dur}s`;
+    petal.style.animationDelay = `${delay}s`;
+    wrap.appendChild(petal);
+    container.appendChild(wrap);
+  }
+})();
+
+/* ---------------- photo fade-in + heart between ---------------- */
+(function(){
+  const left = document.querySelector('.polaroid.left');
+  const right = document.querySelector('.polaroid.right');
+  const heart = document.getElementById('betweenHeart');
+
+  function fadeInElements(){
+    left.style.animation = 'fadeIn 1.2s ease forwards';
+    left.style.opacity = 1;
+    setTimeout(()=>{ right.style.animation = 'fadeIn 1.2s ease forwards'; right.style.opacity = 1; }, 800);
+    setTimeout(()=>{ heart.style.opacity = 1; startHeartBetween(); }, 1800);
+  }
+
+  function startHeartBetween(){
+    const cards = document.querySelectorAll('.polaroid');
+    if (cards.length < 2) return;
+    const leftRect = cards[0].getBoundingClientRect();
+    const rightRect = cards[1].getBoundingClientRect();
+    const leftCenter = { x: leftRect.left + leftRect.width/2, y: leftRect.top + leftRect.height/2 - 40 };
+    const rightCenter = { x: rightRect.left + rightRect.width/2, y: rightRect.top + rightRect.height/2 - 40 };
+    // start at left
+    heart.style.transform = `translate(${leftCenter.x}px, ${leftCenter.y}px) translate(-50%,-50%)`;
+    let state = 0;
+    const t = setInterval(()=> {
+      state = 1 - state;
+      const target = state===0 ? leftCenter : rightCenter;
+      heart.style.transform = `translate(${target.x}px, ${target.y}px) translate(-50%,-50%) scale(1.06)`;
+      // small pop back to slightly smaller to add bounce
+      setTimeout(()=> heart.style.transform = `translate(${target.x}px, ${target.y}px) translate(-50%,-50%) scale(0.95)`, 420);
+    }, 900);
+    // reposition on resize
+    window.addEventListener('resize', ()=> {
+      const l = document.querySelector('.polaroid.left').getBoundingClientRect();
+      const r = document.querySelector('.polaroid.right').getBoundingClientRect();
+      leftCenter.x = l.left + l.width/2; leftCenter.y = l.top + l.height/2 - 40;
+      rightCenter.x = r.left + r.width/2; rightCenter.y = r.top + r.height/2 - 40;
+    });
+  }
+
+  window.addEventListener('load', fadeInElements);
+})();
+
+/* ---------------- YouTube mini player ----------------
+   - replace VIDEO_ID with your preferred YouTube ID
+   - player initializes only after a user click to avoid autoplay block
+--------------------------------------------------*/
+(function(){
+  const VIDEO_ID = 'HBxt_v0WF6Y'; // change to the YouTube ID you want
+  const mpPlay = document.getElementById('mpPlay');
+  const mpRew = document.getElementById('mpRew');
+  const mpFwd = document.getElementById('mpFwd');
+  const mpProgress = document.getElementById('mpProgress');
+  const mpVolume = document.getElementById('mpVolume');
+  const mpTime = document.getElementById('mpTime');
+  const miniPlayer = document.getElementById('miniPlayer');
+  const closePlayer = document.getElementById('closePlayer');
+  const miniDisc = document.getElementById('miniDisc');
+  const ytContainer = document.getElementById('yt-player-container');
+
+  let ytPlayer = null;
+  let ytReady = false;
+  let progressInterval = null;
+
+  function fmt(s){ if(!s||isNaN(s)) return '0:00'; const m=Math.floor(s/60), sec=Math.floor(s%60); return m+':'+(sec<10?'0'+sec:sec); }
+
+  function loadYT(cb){
+    if(window.YT && YT.Player){ cb(); return; }
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+    window.onYouTubeIframeAPIReady = cb;
+  }
+
+  function createYT(cb){
+    const ph = document.createElement('div'); ph.id = 'ytplayer';
+    ytContainer.appendChild(ph);
+    ytPlayer = new YT.Player('ytplayer', {
+      height: '1', width: '1', videoId: VIDEO_ID,
+      playerVars: { autoplay:0, controls:0, rel:0, modestbranding:1, playsinline:1, loop:1, playlist: VIDEO_ID },
+      events: {
+        onReady: function(){ ytReady = true; ytPlayer.setVolume(Math.round(parseFloat(mpVolume.value)*100)); if(cb) cb(); },
+        onStateChange: function(ev){
+          if(ev.data === 1){ // playing
+            mpPlay.textContent = '⏸️';
+            if(miniDisc) miniDisc.classList.add('rotating');
+            startProgress();
+          } else if(ev.data === 2 || ev.data === 0){ // paused or ended
+            mpPlay.textContent = '▶️';
+            if(miniDisc) miniDisc.classList.remove('rotating');
+            stopProgress();
+          }
+        }
+      }
+    });
+  }
+
+  function startProgress(){
+    stopProgress();
+    progressInterval = setInterval(()=> {
+      if(!ytReady || !ytPlayer) return;
+      const cur = ytPlayer.getCurrentTime(), dur = ytPlayer.getDuration() || 0;
+      mpProgress.value = dur ? (cur/dur)*100 : 0;
+      mpTime.textContent = fmt(cur) + ' / ' + fmt(dur);
+    }, 300);
+  }
+  function stopProgress(){ if(progressInterval){ clearInterval(progressInterval); progressInterval = null; } }
+
+  // initialize player (called on first user interaction)
+  function initPlayer(){
+    if (ytPlayer || window._yt_init_called) return;
+    window._yt_init_called = true;
+    loadYT(function(){ createYT(function(){ try{ ytPlayer.playVideo(); }catch(e){} miniPlayer.style.display='block'; }); });
+  }
+
+  // global click triggers initialization (only once)
+  function onFirstInteraction(){
+    initPlayer();
+    document.removeEventListener('click', onFirstInteraction);
+    document.removeEventListener('keydown', onFirstInteraction);
+  }
+  document.addEventListener('click', onFirstInteraction, { once:false });
+  document.addEventListener('keydown', onFirstInteraction, { once:false });
+
+  // controls
+  mpPlay.addEventListener('click', ()=> {
+    if(!ytReady){ initPlayer(); return; }
+    const s = ytPlayer.getPlayerState();
+    if(s === 1) ytPlayer.pauseVideo(); else ytPlayer.playVideo();
+  });
+  mpRew.addEventListener('click', ()=>{ if(!ytReady) return; ytPlayer.seekTo(Math.max(0, ytPlayer.getCurrentTime()-10), true); });
+  mpFwd.addEventListener('click', ()=>{ if(!ytReady) return; ytPlayer.seekTo(Math.min(ytPlayer.getDuration()||0, ytPlayer.getCurrentTime()+10), true); });
+  mpProgress.addEventListener('input', ()=> mpProgress.dragging = true);
+  mpProgress.addEventListener('change', ()=>{ if(!ytReady){ mpProgress.dragging=false; return; } const t = (mpProgress.value/100)*(ytPlayer.getDuration()||0); ytPlayer.seekTo(t,true); mpProgress.dragging=false; });
+  mpVolume.addEventListener('input', ()=>{ if(!ytReady) return; ytPlayer.setVolume(Math.round(parseFloat(mpVolume.value)*100)); });
+
+  // minimize: hide miniPlayer and show disc; clicking disc restores
+  closePlayer.addEventListener('click', ()=>{
+    miniPlayer.style.opacity = '0'; miniPlayer.style.transform = 'scale(.98)';
+    setTimeout(()=> { miniPlayer.style.display = 'none'; }, 240);
+    // create/show disc
+    miniDisc.style.backgroundImage = `url('https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg')`;
+    miniDisc.style.display = 'block';
+    // rotation state based on playing
+    try { if(ytReady && ytPlayer && typeof ytPlayer.getPlayerState==='function' && ytPlayer.getPlayerState()===1) miniDisc.classList.add('rotating'); else miniDisc.classList.remove('rotating'); } catch(e){}
+  });
+
+  miniDisc.addEventListener('click', ()=>{
+    miniDisc.style.display = 'none';
+    miniPlayer.style.display = 'block';
+    setTimeout(()=> { miniPlayer.style.opacity='1'; miniPlayer.style.transform='scale(1)'; }, 20);
+  });
+  // keyboard accessibility for disc
+  miniDisc.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') miniDisc.click(); });
+
+  // keep disc rotation aligned with playing/paused state
+  setInterval(()=> {
+    try { if(ytReady && ytPlayer && typeof ytPlayer.getPlayerState==='function'){ const s = ytPlayer.getPlayerState(); if(s===1) miniDisc.classList.add('rotating'); else miniDisc.classList.remove('rotating'); } } catch(e){}
+  }, 600);
+
+  // cleanup on unload
+  window.addEventListener('beforeunload', ()=> { try{ if(miniDisc) miniDisc.remove(); }catch(e){} });
+})();
+
+</script>
+</body>
+</html>

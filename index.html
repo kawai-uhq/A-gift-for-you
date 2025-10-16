@@ -521,12 +521,7 @@ function typeWrite(el, text, speed = 32) {
   const full = `${chosenName} Das`;
   panel.innerHTML = `<h2>You made Aniket's heart happy 💖</h2><p>and you have successfully become <strong>${full}</strong></p>`;
   spawnHearts(3);
-
-  // redirect to picture.html after 7 seconds
-  setTimeout(() => {
-    window.location.href = "picture.html";
-  }, 7000);
-});
+  setTimeout(() => 7000);
 
     no.addEventListener('click', (e)=>{
       e.stopPropagation();

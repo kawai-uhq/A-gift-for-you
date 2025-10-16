@@ -115,10 +115,10 @@
 <div id="miniPlayer" aria-hidden="true">
   <button class="close-btn" id="closePlayer" aria-label="Minimize">×</button>
   <div id="mpControls">
-    <div class="mp-title" id="mpTitle">Now playing — YouTube</div>
+    <div class="mp-title" id="mpTitle">Where have you been</div>
     <div class="mp-buttons">
-      <button id="mpPlay" aria-label="Play">▶️</button>
       <button id="mpRew" title="Rewind 10s">⏪</button>
+      <button id="mpPlay" aria-label="Play">▶️</button>
       <button id="mpFwd" title="Forward 10s">⏩</button>
     </div>
     <input type="range" id="mpProgress" min="0" max="100" value="0" aria-label="Progress">
@@ -333,7 +333,7 @@ function typeWrite(el, text, speed = 32) {
     yes.addEventListener('click', (e)=>{
       e.stopPropagation();
       const full = `${chosenName} Das`;
-      panel.innerHTML = `<h2>You made Aniket's heart happy 💖</h2><p>and you have successfully become <strong>${full}</strong></p>`;
+      panel.innerHTML = `<h2>You made Aniket happy 💖</h2><p>You have successfully become <strong>${full}</strong></p>`;
       spawnHearts(14);
       // keep final text visible for at least 7 seconds (7000 ms)
       setTimeout(()=> { if (panelRoot) panelRoot.remove(); }, 7000);

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>For You — Sunset</title>
+<style>
+  :root { --accent:#ff6666; --sun-glow: rgba(255,126,95,0.4); }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#ffaf7b,#ff7b7b,#7b4397);-webkit-font-smoothing:antialiased;touch-action:manipulation;-webkit-tap-highlight-color:transparent;overflow:hidden}
+
+  /* SUN */
+  .sun{position:absolute;top:-50px;left:-50px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,#ff5533 0%,#ff7e5f 50%,rgba(255,126,95,0) 70%);filter:blur(20px);box-shadow:0 0 120px 40px var(--sun-glow);z-index:0;cursor:pointer;animation:sunMove 30s ease-in-out infinite}
+  @keyframes sunMove {0%{top:-60px;left:-60px;opacity:1;transform:scale(1)}50%{top:60px;left:-40px;opacity:0.85;transform:scale(1.1)}75%{top:140px;left:-20px;opacity:0.6;transform:scale(1.15)}100%{top:-60px;left:-60px;opacity:1;transform:scale(1)}}
+
+  /* PETALS */
+  .petal-wrap{position:absolute;top:0;left:0;pointer-events:auto;will-change:transform,opacity;-webkit-transform:translateZ(0);transform:translateZ(0)}
+  .petal{display:inline-block;user-select:none;cursor:pointer;will-change:transform,opacity;text-shadow:0 2px 6px rgba(0,0,0,0.06);animation:petalDrift 4s ease-in-out infinite}
+  @keyframes fallDown{0%{transform:translateY(-10vh)}100%{transform:translateY(120vh)}}
+  @keyframes petalDrift{0%{transform:translateX(0) rotate(-8deg)}25%{transform:translateX(8px) rotate(-2deg)}50%{transform:translateX(14px) rotate(6deg)}75%{transform:translateX(6px) rotate(2deg)}100%{transform:translateX(0) rotate(-8deg)}}
+
+  /* HEARTS */
+  .heart{position:absolute;cursor:pointer;user-select:none;animation:pop 1.5s ease forwards}
+  @keyframes pop{0%{transform:scale(.5);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(.5);opacity:0}}
+
+  /* LAND + TREE */
+  .land{position:absolute;bottom:-40px;left:0;width:120%;height:200px;background:linear-gradient(to bottom,#3d1f1f 0%,#1a0f0f 80%);border-top-left-radius:50% 100px;border-top-right-radius:50% 100px;transform:translateX(-10%);z-index:5;box-shadow:0 -15px 25px rgba(0,0,0,0.4) inset}
+  .tree-scene{position:absolute;bottom:100px;right:0;width:280px;height:280px;z-index:6;cursor:pointer}
+  svg{width:100%;height:100%;fill:#1a0f16}
+  .tree-top{transform-box:fill-box;transform-origin:75% 30%;animation:treeSway 6s ease-in-out infinite}
+  @keyframes treeSway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+  .swing{transform-box:fill-box;transform-origin:50% 0%;animation:swingMotion 4.2s ease-in-out infinite}
+  @keyframes swingMotion{0%{transform:rotate(6deg)}50%{transform:rotate(-6deg)}100%{transform:rotate(6deg)}}
+
+  /* MESSAGE */
+  .message{position:absolute;background:rgba(255,255,255,0.95);padding:8px 14px;border-radius:14px;font-weight:600;font-size:1rem;opacity:0;transform:translateY(12px) scale(.98);animation:floatFade 4s ease forwards;z-index:12;pointer-events:none;white-space:nowrap}
+  @keyframes floatFade{0%{opacity:0;transform:translateY(12px) scale(.98)}10%{opacity:1;transform:translateY(0) scale(1)}70%{opacity:1;transform:translateY(-18px)}100%{opacity:0;transform:translateY(-50px)}}
+
+  /* MINI PLAYER (Lower-left) */
+  #miniPlayer{position:fixed;left:18px;bottom:18px;width:320px;max-width:92%;background:rgba(0,0,0,0.35);padding:12px;border-radius:12px;color:#fff;z-index:9999;backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,0.5);transition:transform .25s,opacity .25s}
+  #mpControls{overflow:hidden}
+  .mp-title{font-weight:700;font-size:14px;margin-bottom:6px}
+  .mp-buttons{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .mp-buttons button{background:var(--accent);border:none;color:#fff;padding:6px 8px;border-radius:8px;cursor:pointer}
+  #mpProgress,#mpVolume{width:100%;accent-color:var(--accent);background:transparent}
+  #mpTime{font-size:12px;color:#ffdede;margin-top:6px;text-align:right}
+  .close-btn{position:absolute;top:6px;right:8px;color:#fff;background:none;border:none;font-size:18px;cursor:pointer}
+  .mini-disc{position:fixed;left:25px;bottom:25px;width:64px;height:64px;border-radius:50%;background-size:cover;background-position:center center;background-repeat:no-repeat;box-shadow:0 6px 20px rgba(0,0,0,0.45);cursor:pointer;z-index:99999;transition:transform .2s,opacity .2s}
+  .mini-disc--ring{box-shadow:0 6px 20px rgba(0,0,0,0.45), 0 0 18px rgba(255,120,120,0.18)}
+  .mini-disc.rotating{animation:spin 6s linear infinite}
+  @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+  @media(max-width:420px){#miniPlayer{width:92%;left:8px;bottom:12px}}
+</style>
+</head>
+<body>
+
+<div class="sun" id="sun" title="Click the sun"></div>
+<div class="land" aria-hidden="true"></div>
+
+<div class="tree-scene" id="treeScene" role="button" aria-label="Tree with swing (clickable)">
+  <svg viewBox="0 0 300 300" aria-hidden="true">
+    <path d="M230 300 L250 160 L270 300 Z" fill="#1a0f16"/>
+    <g class="tree-top">
+      <circle cx="250" cy="140" r="60"/>
+      <circle cx="220" cy="120" r="50"/>
+      <circle cx="280" cy="120" r="50"/>
+      <g class="branch-sway">
+        <circle cx="245" cy="100" r="14"/>
+        <circle cx="215" cy="95" r="10"/>
+        <circle cx="275" cy="95" r="11"/>
+      </g>
+    </g>
+    <path d="M200 150 C210 140, 240 135, 260 145" stroke="#1a0f16" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <line x1="200" y1="150" x2="200" y2="230" stroke="#1a0f16" stroke-width="3"/>
+    <line x1="220" y1="150" x2="220" y2="230" stroke="#1a0f16" stroke-width="3"/>
+    <g class="swing">
+      <rect x="190" y="230" width="40" height="6" fill="#1a0f16"/>
+      <circle cx="200" cy="220" r="6" fill="#1a0f16"/>
+      <circle cx="215" cy="220" r="6" fill="#1a0f16"/>
+    </g>
+  </svg>
+</div>
+
+<!-- Music Player -->
+<div id="miniPlayer">
+  <button class="close-btn" id="closePlayer" aria-label="Minimize">×</button>
+  <div id="mpControls">
+    <div class="mp-title" id="mpTitle">Now playing — YouTube</div>
+    <div class="mp-buttons">
+      <button id="mpPlay" aria-label="Play">▶️</button>
+      <button id="mpRew" title="Rewind 10s">⏪</button>
+      <button id="mpFwd" title="Forward 10s">⏩</button>
+    </div>
+    <input type="range" id="mpProgress" min="0" max="100" value="0" aria-label="Progress">
+    <div id="mpTime">0:00 / 0:00</div>
+    <div style="margin-top:8px;">
+      <label style="font-size:12px;color:#ffdede">Volume</label>
+      <input type="range" id="mpVolume" min="0" max="1" step="0.01" value="0.6" aria-label="Volume">
+    </div>
+  </div>
+</div>
+
+<!-- hidden YT container -->
+<div id="yt-player-container" style="position:fixed;right:-9999px;bottom:-9999px;width:1px;height:1px;overflow:hidden;"></div>
+
+<script>
+/* ---------------- PETALS + HEARTS ---------------- */
+(function(){
+  const numPetals = 40;
+  for (let i = 0; i < numPetals; i++) {
+    const wrap = document.createElement('div');
+    wrap.className = 'petal-wrap';
+    const depth = Math.ceil(Math.random() * 3);
+    const size = depth === 1 ? Math.random() * 20 + 24
+               : depth === 2 ? Math.random() * 18 + 16
+               : Math.random() * 14 + 10;
+    const fallDuration = depth === 1 ? Math.random() * 5 + 7
+                       : depth === 2 ? Math.random() * 7 + 9
+                       : Math.random() * 9 + 11;
+    wrap.style.left = Math.random() * 100 + 'vw';
+    wrap.style.top = Math.random() * -200 + 'px';
+    wrap.style.animation = `fallDown ${fallDuration}s linear infinite ${Math.random()*5}s`;
+    wrap.style.zIndex = depth === 1 ? 9 : depth === 2 ? 7 : 5;
+    wrap.style.opacity = depth === 1 ? 0.95 : depth === 2 ? 0.75 : 0.5;
+
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.textContent = '🌸';
+    petal.style.fontSize = size + 'px';
+    petal.style.animationDuration = (Math.random() * 2 + 3).toFixed(2) + 's';
+    wrap.appendChild(petal);
+    document.body.appendChild(wrap);
+  }
+
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.textContent = '💗';
+    heart.style.left = (10 + Math.random() * 75) + 'vw';
+    heart.style.top = (30 + Math.random() * 50) + 'vh';
+    heart.style.fontSize = (Math.random() * 20 + 12) + 'px';
+    heart.style.zIndex = 8;
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 2000);
+  }
+  setInterval(createHeart, 700);
+})();
+
+/* ---------------- CLICK MESSAGES ---------------- */
+(function(){
+  const treeScene = document.getElementById('treeScene');
+  treeScene.addEventListener('click',(e)=>{ e.stopPropagation(); showMsg("Us swinging one day! 🩵",{right:60,bottom:330,color:'#003366',box:'0 0 25px rgba(150,200,255,0.6)'}); });
+
+  document.addEventListener('click', (e)=> {
+    // petal click
+    const petalWrap = e.target.closest('.petal-wrap');
+    if (petalWrap && e.target.classList.contains('petal')) {
+      e.stopPropagation();
+      const pastelColors = ['#ffb6c1','#ffc8dd','#cdb4db','#bde0fe','#a2d2ff','#fbc4ab','#ffafcc','#c8b6ff','#b5ead7','#fdfd96'];
+      const color = pastelColors[Math.floor(Math.random()*pastelColors.length)];
+      showMsg("You're cute as this flower :3", {color, box:`0 0 25px ${color}80`, anchorRect: petalWrap.getBoundingClientRect()});
+      return;
+    }
+    // heart click
+    if (e.target.classList.contains('heart')) {
+      e.stopPropagation();
+      const texts = ["You stole my heart ♥️","I love you 💝"];
+      const glowColors = ['#ff66b2','#ff1493','#ff3366','#ff6f91','#ff85a1','#ff3f6e'];
+      const text = texts[Math.floor(Math.random()*texts.length)];
+      const glow = glowColors[Math.floor(Math.random()*glowColors.length)];
+      showMsg(text, {color:glow, box:`0 0 30px ${glow}a0`, anchorRect: e.target.getBoundingClientRect()});
+      return;
+    }
+  });
+
+  // sun click
+  document.getElementById('sun').addEventListener('click',(e)=>{
+    e.stopPropagation();
+    showMsg("Whoa, someone turned up the heat! 🥵☀️", {color:'#ff3f6e', box:'0 0 30px rgba(255,90,120,0.6)', near: e.target.getBoundingClientRect()});
+  });
+
+  function showMsg(text, opts={}) {
+    const m = document.createElement('div');
+    m.className = 'message';
+    m.textContent = text;
+    if (opts.color) m.style.color = opts.color;
+    if (opts.box) m.style.boxShadow = opts.box;
+    if (opts.right !== undefined && opts.bottom !== undefined) { m.style.right = opts.right + 'px'; m.style.bottom = opts.bottom + 'px'; }
+    else if (opts.anchorRect) {
+      const rect = opts.anchorRect;
+      const left = rect.left + rect.width/2 - 80;
+      const top = rect.top - 48;
+      m.style.left = Math.max(8, Math.min(left, window.innerWidth - 160)) + 'px';
+      m.style.top = Math.max(8, top) + 'px';
+    } else if (opts.near) {
+      const rect = opts.near;
+      const left = rect.right + 8;
+      const top = rect.top + rect.height/2 - 12;
+      m.style.left = Math.max(8, Math.min(left, window.innerWidth - 200)) + 'px';
+      m.style.top = Math.max(8, Math.min(top, window.innerHeight - 80)) + 'px';
+    } else {
+      m.style.left = '20px'; m.style.top = '20px';
+    }
+    document.body.appendChild(m);
+    setTimeout(()=> m.remove(), 4200);
+  }
+})();
+
+/* ---------------- YouTube player + mini-disc behavior ---------------- */
+(function(){
+  const VIDEO_ID = 'HBxt_v0WF6Y'; // change to any YT id you want
+  const playBtn = document.getElementById('mpPlay'), prog = document.getElementById('mpProgress'), vol = document.getElementById('mpVolume'), timeDisplay = document.getElementById('mpTime'), rew = document.getElementById('mpRew'), fwd = document.getElementById('mpFwd');
+  const miniPlayer = document.getElementById('miniPlayer'), closeBtn = document.getElementById('closePlayer');
+  const ytContainer = document.getElementById('yt-player-container');
+  let ytPlayer = null, ytReady = false, progressInterval = null, disc = null;
+
+  function fmt(s){ if(!s || isNaN(s)) return '0:00'; const m = Math.floor(s/60), sec = Math.floor(s%60); return m+':'+(sec<10?'0'+sec:sec); }
+
+  function loadYT(cb){ if (window.YT && YT.Player) { cb(); return; } const s = document.createElement('script'); s.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(s); window.onYouTubeIframeAPIReady = cb; }
+
+  function createYTPlayer(callback){
+    const placeholder = document.createElement('div'); placeholder.id = 'ytplayer'; ytContainer.appendChild(placeholder);
+    ytPlayer = new YT.Player('ytplayer', {
+      height: '1', width: '1', videoId: VIDEO_ID,
+      playerVars: { autoplay: 0, controls: 0, rel: 0, modestbranding: 1, playsinline: 1, loop: 1, playlist: VIDEO_ID },
+      events: {
+        onReady: function(){ ytReady = true; ytPlayer.setVolume(Math.round(parseFloat(vol.value) * 100)); if (typeof callback === 'function') callback(); },
+        onStateChange: function(ev){ // update UI & disc rotation
+          if (ev.data === 1) { playBtn.textContent = '⏸️'; if (disc) disc.classList.add('rotating'); startProgress(); }
+          else if (ev.data === 2 || ev.data === 0) { playBtn.textContent = '▶️'; if (disc) disc.classList.remove('rotating'); stopProgress(); }
+        }
+      }
+    });
+  }
+
+  function startProgress(){ stopProgress(); progressInterval = setInterval(()=>{ if (!ytReady || !ytPlayer) return; const cur = ytPlayer.getCurrentTime(), dur = ytPlayer.getDuration() || 0; prog.value = dur ? (cur/dur)*100 : 0; timeDisplay.textContent = fmt(cur) + ' / ' + fmt(dur); }, 300); }
+  function stopProgress(){ if (progressInterval) { clearInterval(progressInterval); progressInterval = null; } }
+
+  // initialize player on first click (satisfy autoplay policies)
+  function initOnFirstClick() {
+    if (ytPlayer || window._yt_init_started) return;
+    window._yt_init_started = true;
+    loadYT(function(){ createYTPlayer(function(){ // autoplay once ready
+      try { ytPlayer.playVideo(); } catch(e) {}
+      startProgress();
+    }); });
+  }
+  document.addEventListener('click', function once(){ initOnFirstClick(); document.removeEventListener('click', once); }, { once: true });
+
+  // control buttons
+  playBtn.addEventListener('click', function(){
+    if (!ytReady) { initOnFirstClick(); return; }
+    const state = ytPlayer.getPlayerState();
+    if (state === 1) ytPlayer.pauseVideo();
+    else ytPlayer.playVideo();
+  });
+  rew.addEventListener('click', function(){ if (!ytReady) return; ytPlayer.seekTo(Math.max(0, ytPlayer.getCurrentTime() - 10), true); });
+  fwd.addEventListener('click', function(){ if (!ytReady) return; ytPlayer.seekTo(Math.min(ytPlayer.getDuration()||0, ytPlayer.getCurrentTime() + 10), true); });
+
+  prog.addEventListener('input', ()=> prog.dragging = true);
+  prog.addEventListener('change', function(){ if (!ytReady) { prog.dragging = false; return; } const t = (prog.value/100) * (ytPlayer.getDuration() || 0); ytPlayer.seekTo(t, true); prog.dragging = false; });
+
+  vol.addEventListener('input', function(){ if (!ytReady) return; ytPlayer.setVolume(Math.round(parseFloat(vol.value) * 100)); });
+
+  // Minimize -> create disc with thumbnail
+  closeBtn.addEventListener('click', function(){
+    // hide player box
+    miniPlayer.style.opacity = '0';
+    miniPlayer.style.transform = 'scale(0.92)';
+    setTimeout(()=> {
+      miniPlayer.style.display = 'none';
+
+      // create disc
+      if (!disc) {
+        disc = document.createElement('div');
+        disc.className = 'mini-disc mini-disc--ring';
+        // set YT thumbnail as background
+        disc.style.backgroundImage = `url('https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg')`;
+        // append
+        document.body.appendChild(disc);
+
+        // clicking disc restores player
+        disc.addEventListener('click', function(){
+          // remove disc
+          if (disc) { disc.remove(); disc = null; }
+          // show player
+          miniPlayer.style.display = 'block';
+          // tiny delay to allow display before fading in
+          setTimeout(()=> { miniPlayer.style.opacity = '1'; miniPlayer.style.transform = 'scale(1)'; }, 20);
+        });
+      }
+
+      // set disc rotation state based on player
+      try {
+        if (ytReady && ytPlayer.getPlayerState && ytPlayer.getPlayerState() === 1) disc.classList.add('rotating');
+        else disc.classList.remove('rotating');
+      } catch (e) {
+        // ignore if not ready
+      }
+    }, 200);
+  });
+
+  // If player state changes while minimized, update disc rotation
+  // Use interval to poll if needed (safe fallback)
+  setInterval(function(){
+    if (!disc) return;
+    try {
+      if (ytReady && ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
+        const s = ytPlayer.getPlayerState();
+        if (s === 1) disc.classList.add('rotating'); else disc.classList.remove('rotating');
+      }
+    } catch(e){}
+  }, 600);
+
+  // ensure disc removed on page unload
+  window.addEventListener('beforeunload', ()=> { if (disc) try{ disc.remove(); }catch(e){} });
+
+})();
+</script>
+</body>
+</html>

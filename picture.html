@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Pictures 💞</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(180deg, #ffaf7b, #ff7b7b, #7b4397);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    overflow: hidden;
+    font-family: "Poppins", sans-serif;
+    user-select: none;
+  }
+
+  .polaroid {
+    width: 220px;
+    background: #fff;
+    padding: 12px 12px 18px;
+    border-radius: 8px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.28);
+    text-align: center;
+    position: relative;
+    transform-origin: center;
+    transition: transform 0.6s ease;
+  }
+
+  .polaroid img {
+    width: 190px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 6px;
+    animation: floaty 4.6s ease-in-out infinite;
+  }
+
+  .caption {
+    margin-top: 8px;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .left { transform: rotate(-6deg); }
+  .right { transform: rotate(6deg); }
+
+  @keyframes floaty {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* Bouncing heart */
+  .heart {
+    position: absolute;
+    font-size: 2.5rem;
+    animation: bounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 8px 20px rgba(255,80,120,0.25));
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.15); }
+  }
+</style>
+</head>
+<body>
+  <div class="polaroid left">
+    <img src="images/photo1.jpg" alt="Thinking of you">
+    <div class="caption">Thinking of you</div>
+  </div>
+
+  <div class="heart" id="heart">💗</div>
+
+  <div class="polaroid right">
+    <img src="images/photo2.jpg" alt="One day, together">
+    <div class="caption">One day, together</div>
+  </div>
+
+<script>
+const left = document.querySelector('.left');
+const right = document.querySelector('.right');
+const heart = document.getElementById('heart');
+
+function moveHeart() {
+  const leftRect = left.getBoundingClientRect();
+  const rightRect = right.getBoundingClientRect();
+  const leftCenter = leftRect.left + leftRect.width / 2;
+  const rightCenter = rightRect.left + rightRect.width / 2;
+  const top = leftRect.top + leftRect.height / 2 - 40;
+
+  let direction = 1;
+  setInterval(() => {
+    const x = direction === 1 ? rightCenter : leftCenter;
+    heart.style.transition = 'transform 1s cubic-bezier(.22,.9,.2,1)';
+    heart.style.transform = `translate(${x - 20}px, ${top}px)`;
+    direction *= -1;
+  }, 1400);
+}
+
+window.onload = moveHeart;
+</script>
+</body>
+</html>

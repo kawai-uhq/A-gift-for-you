@@ -259,7 +259,7 @@
       height:'1', width:'1', videoId: VIDEO_ID,
       playerVars: { autoplay:0, controls:0, rel:0, modestbranding:1, disablekb:1, playsinline:1, loop:1, playlist:VIDEO_ID },
       events: {
-        onReady: function(e){ ytReady=true; durationSec = ytPlayer.getDuration() || 0; titleEl.textContent='Now playing — YouTube'; if (callback) callback(); },
+        onReady: function(e){ ytReady=true; durationSec = ytPlayer.getDuration() || 0; titleEl.textContent='Where have you been'; if (callback) callback(); },
         onStateChange: function(ev){ const s = ev.data; if(s===1){ playBtn.textContent='⏸️'; startProgressUpdater(); } else if(s===2||s===0){ playBtn.textContent='▶️'; stopProgressUpdater(); } }
       }
     });
